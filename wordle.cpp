@@ -21,6 +21,7 @@ std::string getUnpermuted(std::string curr, int dashesToAdd);
 void stringToCharQueue(const std::string& unpermuted, std::queue<char>& q, int i);
 void permute(std::queue<char> q, int size, string curr, std::vector<std::string>& perms);
 void alpha(std::string full, std::set<std::string>& allcombos);
+void allcombs(std::string full, const std::vector<std::string>& v, std::set<std::string>& allcombos, int dashpos, int maxsize, int i);
 void allcombs(std::string full, std::string perm, std::set<std::string>& allcombos, int dashpos);
 
 // Definition of primary wordle function
@@ -36,8 +37,9 @@ std::set<std::string> wordle(
   stringToCharQueue(unpermuted, q, 0);
   std::vector<std::string> permutations;
   permute(q, q.size(), "", permutations); // recursive helper function to generate all permutations of floating + dashes
-  for(unsigned i = 0; i < permutations.size(); i++)
-    allcombs(in, permutations[i], allcombos, 0);
+  allcombs(in, permutations, allcombos, 0, permutations.size(), 0);
+  // for(unsigned i = 0; i < permutations.size(); i++)
+  //   allcombs(in, permutations[i], allcombos, 0);
   std::set<std::string>::iterator it = allcombos.begin();
   for(; it != allcombos.end(); ++it){ // transfer every dictionary-verified word into return set
     if(dict.find(*it) != dict.end()) retset.insert(*it);
@@ -88,6 +90,12 @@ void alpha(std::string full, std::set<std::string>& allcombos){
     full[nextdash] = 'a' + i;
     alpha(full, allcombos);
   }
+}
+
+void allcombs(std::string full, const std::vector<std::string>& v, std::set<std::string>& allcombos, int dashpos, int maxsize, int i){
+  if(i == maxsize) return;
+  allcombs(full, v[i], allcombos, dashpos);
+  allcombs(full, v, allcombos, 0, maxsize, i + 1);
 }
 
 void allcombs(std::string full, std::string perm, std::set<std::string>& allcombos, int dashpos){
